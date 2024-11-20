@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Real-Time Hazard Map</title>
+    <style>
+      #map {
+        height: 500px;
+        width: 100%;
+      }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  </head>
+  <body>
+    <h1>Real-Time Hazard Map</h1>
+    <div id="map"></div>
+    <script>
+      // Initialize map
+      const map = L.map("map").setView([24.466667, 54.366669], 7); // Default center (UAE)
+
+      // Add OpenStreetMap tiles
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      // Generate random hazards across UAE
+      const emirates = [
+        { name: "Abu Dhabi", lat: 24.453884, lng: 54.3773438 },
+        { name: "Dubai", lat: 25.204849, lng: 55.270783 },
+        { name: "Sharjah", lat: 25.346255, lng: 55.420933 },
+        { name: "Ajman", lat: 25.405216, lng: 55.513643 },
+        { name: "Fujairah", lat: 25.128809, lng: 56.326484 },
+        { name: "Ras Al Khaimah", lat: 25.800731, lng: 55.976154 },
+        { name: "Al Ain", lat: 24.2075, lng: 55.7447 },
+        { name: "Kalba", lat: 25.1164, lng: 56.3375 },
+      ];
+
+      const hazardTypes = ["Pothole", "Flooding", "Slippery Road", "Construction Zone"];
+
+      // Function to generate random hazards
+      function generateHazards(count) {
+        const hazards = [];
+        for (let i = 0; i < count; i++) {
+          const emirate = emirates[Math.floor(Math.random() * emirates.length)];
+          const type = hazardTypes[Math.floor(Math.random() * hazardTypes.length)];
+          const latOffset = (Math.random() - 0.5) * 0.1; // Slight variation in lat
+          const lngOffset = (Math.random() - 0.5) * 0.1; // Slight variation in lng
+          hazards.push({
+            lat: emirate.lat + latOffset,
+            lng: emirate.lng + lngOffset,
+            type: `${type} - ${emirate.name}`,
+          });
+        }
+        return hazards;
+      }
+
+      // Generate 100 random hazards
+      const hazards = generateHazards(100);
+
+      // Add markers to the map
+      hazards.forEach((hazard) => {
+        L.marker([hazard.lat, hazard.lng])
+          .addTo(map)
+          .bindPopup(`<b>Hazard:</b> ${hazard.type}`);
+      });
+    </script>
+  </body>
+</html>
